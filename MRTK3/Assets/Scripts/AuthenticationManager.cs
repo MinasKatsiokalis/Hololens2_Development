@@ -128,7 +128,7 @@ public class AuthenticationManager
         }
     }
 
-    public static async void GetData()
+    public static async void GetAllSensors()
     {
         /****************************************************************************************************************************************
         * URL = 'https://'"${HOST}"':'"${QUANTMLEAP_PROXY_HTTPS_PORT}"'/v2/entities' # get all sensors
@@ -153,11 +153,65 @@ public class AuthenticationManager
 
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            Entities[] response_content = JsonHelper.GetJsonArray<Entities>(response.Content);
-            foreach(Entities entity in response_content)
+            Entity[] response_content = JsonHelper.GetJsonArray<Entity>(response.Content);
+            foreach(Entity entity in response_content)
             {
-                Debug.Log(entity.entityType);
+                //Debug.Log(entity.entityType);
+                switch (entity.entityType)
+                {
+                    case "dl-atm22":
+                        Debug.Log("dl-atm22: " + entity.entityId);
+                        break;
+                    case "dl-pyr":
+                        Debug.Log("dl-pyr: " + entity.entityId);
+                        break;
+                    case "synetica-enl-air-x":
+                        Debug.Log("synetica-enl-air-x: " + entity.entityId);
+                        break;
+                    case "sensedge_stick":
+                        Debug.Log("sensedge_stick: " + entity.entityId);
+                        break;
+                    default:
+                        Debug.Log("Other type: " + entity.entityId);
+                        break;
+                }
             }
+            Debug.Log(response.Content);
+        }
+        else
+        {
+            Debug.Log(response.StatusCode);
+            ResponseFailContent response_content = JsonUtility.FromJson<ResponseFailContent>(response.Content);
+            Debug.Log(response.Content);
+        }
+    }
+
+    public static async void GetSensorData(string sensor, int lastN)
+    {
+        /****************************************************************************************************************************************
+        * URL = 'https://'"${HOST}"':'"${QUANTMLEAP_PROXY_HTTPS_PORT}"'/v2/entities' # get all sensors
+        * URL='https://'"${HOST}"':'"${QUANTMLEAP_PROXY_HTTPS_PORT}"'/v2/entities/'"${SENSOR}"'?lastN=100' # all the attribues of SENSOR
+        * URL='https://'"${HOST}"':'"${QUANTMLEAP_PROXY_HTTPS_PORT}"'/v2/entities/'"${SENSOR}"'/attrs/'"${ATTRIBUTE}"'?lastN=100' //selected one
+        ****************************************************************************************************************************************/
+
+        string url = "https://varcities.tuc.gr:" + quantmleap_proxy_https_port + "/v2/entities/"+sensor+"?lastN="+lastN;
+        var client = new RestClient(url);
+        client.Timeout = -1;
+        client.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+
+        var request = new RestRequest(Method.GET);
+        request.AddHeader("Fiware-Service", "openiot");
+        request.AddHeader("X-Auth-Token", accessToken);
+        request.AddHeader("Fiware-ServicePath", "/");
+
+        IRestResponse response = await Task.Run(() =>
+        {
+            return client.ExecuteAsync(request);
+        });
+
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            //Entities[] response_content = JsonHelper.GetJsonArray<Entities>(response.Content);
             Debug.Log(response.Content);
         }
         else
@@ -202,7 +256,7 @@ public class AuthenticationManager
     }
 
     [Serializable]
-    public class Entities
+    public class Entity
     {
         public string entityId;
         public string entityType;
