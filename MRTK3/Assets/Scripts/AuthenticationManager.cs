@@ -211,8 +211,12 @@ public class AuthenticationManager
 
         if (response.StatusCode == System.Net.HttpStatusCode.OK)
         {
-            //Entities[] response_content = JsonHelper.GetJsonArray<Entities>(response.Content);
-            Debug.Log(response.Content);
+            EntityAttributes response_content = JsonUtility.FromJson<EntityAttributes>(response.Content);
+            Debug.Log(response_content.entityType);
+            foreach(Attribute attr in response_content.attributes)
+            {
+                Debug.Log(attr.attrName+" : "+ attr.values[0]);
+            }
         }
         else
         {
@@ -261,5 +265,21 @@ public class AuthenticationManager
         public string entityId;
         public string entityType;
         public DateTime index;
+    }
+
+    [Serializable]
+    public class EntityAttributes
+    {
+        public List<Attribute> attributes;
+        public string entityId;
+        public string entityType;
+        public List<DateTime> index;
+    }
+
+    [Serializable]
+    public class Attribute
+    {
+        public string attrName;
+        public List<double> values;
     }
 }
