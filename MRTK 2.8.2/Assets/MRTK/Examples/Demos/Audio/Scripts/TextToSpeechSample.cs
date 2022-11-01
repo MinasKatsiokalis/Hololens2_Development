@@ -29,7 +29,9 @@ namespace Microsoft.MixedReality.Toolkit.Examples.Demos
             if (textToSpeech != null)
             {
                 // Create message
-                var msg = string.Format("This is the {0} voice. You hear me cause you clicked me. Welcome to the HoloLens experience! Here everyhting is possible!", textToSpeech.Voice.ToString());
+                var msg = string.Format(
+                "This is the {0} voice. It should sound like it's coming from the object you clicked. Feel free to walk around and listen from different angles.",
+                textToSpeech.Voice.ToString());
 
                 // Speak message
                 textToSpeech.StartSpeaking(msg);
