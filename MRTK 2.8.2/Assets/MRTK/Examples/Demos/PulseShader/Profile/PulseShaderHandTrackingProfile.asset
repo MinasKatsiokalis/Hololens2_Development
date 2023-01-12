@@ -19,7 +19,7 @@ MonoBehaviour:
     type: 3}
   fingertipPrefab: {fileID: 7094064642998883381, guid: b37dde41a983d664c8a09a91313733e7,
     type: 3}
-  systemHandMeshMaterial: {fileID: 2100000, guid: 8898ca407d928454d876a616ba1be32e,
+  systemHandMeshMaterial: {fileID: 2100000, guid: 7bf2a7a504e67394d98ccd4e06fbc7a1,
     type: 2}
   riggedHandMeshMaterial: {fileID: 2100000, guid: 46180a965b426614f97a7239d1248a1a,
     type: 2}
