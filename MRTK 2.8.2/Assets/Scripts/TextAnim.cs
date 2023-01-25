@@ -14,45 +14,48 @@ public class TextAnim : MonoBehaviour
     [SerializeField] float timeBtwnChars;
     [SerializeField] float timeBtwnWords;
 
-    int i = 0;
+    //int i = 0;
 
     void Start()
     {
-        EndCheck();
+        StartCoroutine(EndCheck()); 
     }
 
-    public void EndCheck()
+    public IEnumerator EndCheck()
     {
-        if (i <= stringArray.Length - 1)
+        for(int i=0; i <= stringArray.Length - 1; i++)
+        //if (i <= stringArray.Length - 1)
         {
-            _textMeshPro.text = stringArray[i] + "\n";
-            StartCoroutine(TextVisible());
+            Debug.Log("word");
+            _textMeshPro.text += stringArray[i] + "\n\n";
+
+            yield return StartCoroutine(TextVisible());
+
         }
     }
 
+    private int visibleCount = 0;
+    private int counter = 0;
     private IEnumerator TextVisible()
     {
         _textMeshPro.ForceMeshUpdate();
         int totalVisibleCharacters = _textMeshPro.textInfo.characterCount;
-        int counter = 0;
 
-        while (true)
+        while (visibleCount < totalVisibleCharacters)
         {
-            int visibleCount = counter % (totalVisibleCharacters + 1);
+            visibleCount = counter % (totalVisibleCharacters + 1);
             _textMeshPro.maxVisibleCharacters = visibleCount;
 
-            
+            /*
             if (visibleCount >= totalVisibleCharacters)
             {
                 i += 1;
                 Invoke("EndCheck", timeBtwnWords);
                 break;
-            }
+            }*/
 
             counter += 1;
             yield return new WaitForSeconds(timeBtwnChars);
-
-
         }
     }
 }
