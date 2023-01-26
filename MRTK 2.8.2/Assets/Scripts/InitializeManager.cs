@@ -6,6 +6,7 @@ public class InitializeManager : MonoBehaviour
 {
     [SerializeField] GameObject fogParticles;
     [SerializeField] AudioSource audioSource;
+    [SerializeField] TextAnim textAnimator;
     // Start is called before the first frame update
     void Start()
     {
@@ -16,6 +17,7 @@ public class InitializeManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1);
         audioSource.Play();
+        textAnimator.AnimateText();
 
         yield return new WaitForSeconds(2);
         fogParticles.SetActive(true);

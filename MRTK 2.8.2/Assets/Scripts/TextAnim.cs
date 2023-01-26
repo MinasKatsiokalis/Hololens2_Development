@@ -2,35 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-
+using UnityEngine.UI;
 
 
 public class TextAnim : MonoBehaviour
 {
-    [SerializeField] TextMeshProUGUI _textMeshPro;
+    [SerializeField] TextMeshProUGUI textMeshPro;
 
-    public string[] stringArray;
+    [TextArea(1, 10)] public string[] stringArray;
 
     [SerializeField] float timeBtwnChars;
     [SerializeField] float timeBtwnWords;
 
-    //int i = 0;
-
-    void Start()
+    public void AnimateText()
     {
-        StartCoroutine(EndCheck()); 
+        StartCoroutine(CoAnimateText());
     }
 
-    public IEnumerator EndCheck()
+    private IEnumerator CoAnimateText()
     {
         for(int i=0; i <= stringArray.Length - 1; i++)
-        //if (i <= stringArray.Length - 1)
         {
-            Debug.Log("word");
-            _textMeshPro.text += stringArray[i] + "\n\n";
+            textMeshPro.text += stringArray[i] + "\n";
+            LayoutRebuilder.ForceRebuildLayoutImmediate(textMeshPro.rectTransform.parent.GetComponent<RectTransform>());
 
             yield return StartCoroutine(TextVisible());
-
         }
     }
 
@@ -38,13 +34,13 @@ public class TextAnim : MonoBehaviour
     private int counter = 0;
     private IEnumerator TextVisible()
     {
-        _textMeshPro.ForceMeshUpdate();
-        int totalVisibleCharacters = _textMeshPro.textInfo.characterCount;
+        textMeshPro.ForceMeshUpdate();
+        int totalVisibleCharacters = textMeshPro.textInfo.characterCount;
 
         while (visibleCount < totalVisibleCharacters)
         {
             visibleCount = counter % (totalVisibleCharacters + 1);
-            _textMeshPro.maxVisibleCharacters = visibleCount;
+            textMeshPro.maxVisibleCharacters = visibleCount;
 
             /*
             if (visibleCount >= totalVisibleCharacters)
@@ -54,7 +50,7 @@ public class TextAnim : MonoBehaviour
                 break;
             }*/
 
-            counter += 1;
+            counter ++;
             yield return new WaitForSeconds(timeBtwnChars);
         }
     }
