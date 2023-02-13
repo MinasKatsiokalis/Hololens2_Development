@@ -14,20 +14,20 @@ public class TextAnim : MonoBehaviour
     [SerializeField] float timeBtwnChars;
     [SerializeField] float timeBtwnWords;
 
-    public void AnimateText()
+    public void AnimateText(string text)
     {
-        StartCoroutine(CoAnimateText());
+        StartCoroutine(CoAnimateText(text));
     }
 
-    private IEnumerator CoAnimateText()
+    private IEnumerator CoAnimateText(string text)
     {
-        for(int i=0; i <= stringArray.Length - 1; i++)
-        {
-            textMeshPro.text += stringArray[i] + "\n";
-            LayoutRebuilder.ForceRebuildLayoutImmediate(textMeshPro.rectTransform.parent.GetComponent<RectTransform>());
+        //for(int i=0; i <= stringArray.Length - 1; i++)
+        //{
+        textMeshPro.text = text;
+        LayoutRebuilder.ForceRebuildLayoutImmediate(textMeshPro.rectTransform.parent.GetComponent<RectTransform>());
 
-            yield return StartCoroutine(TextVisible());
-        }
+        yield return StartCoroutine(TextVisible());
+        //}
     }
 
     private int visibleCount = 0;

@@ -17,9 +17,12 @@ public class InitializeManager : MonoBehaviour
     {
         yield return new WaitForSeconds(1);
         audioSource.Play();
-        textAnimator.AnimateText();
+        if(textAnimator != null)
+            //textAnimator.AnimateText();
 
         yield return new WaitForSeconds(2);
         fogParticles.SetActive(true);
     }
+
+    
 }

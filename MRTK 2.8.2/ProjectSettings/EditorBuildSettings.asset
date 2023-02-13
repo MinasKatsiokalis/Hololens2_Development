@@ -39,6 +39,15 @@ EditorBuildSettings:
     path: Assets/MRTK/Examples/Demos/UX/Slider/Scenes/SliderExample.unity
     guid: 086aad2912678d04e968264b2398004b
   - enabled: 1
+    path: Assets/MRTK/Examples/Demos/LookAndPinch/Scenes/LookAndPinchDemo-00-RootScene.unity
+    guid: e2e83e6d02614d849a325da1e36a4411
+  - enabled: 1
+    path: Assets/MRTK/Examples/Demos/LookAndPinch/Scenes/LookAndPinchDemo-01-BasicSetup.unity
+    guid: 78df53e439742d8498b7deffc64b863e
+  - enabled: 1
+    path: Assets/MRTK/Examples/Demos/LookAndPinch/Scenes/LookAndPinchDemo-04-TargetPositioning.unity
+    guid: a618881839aac9f4bae86376b3b20295
+  - enabled: 1
     path: Assets/MRTK/Examples/Demos/EyeTracking/Scenes/EyeTrackingDemo-02-TargetSelection.unity
     guid: 55643f7e4eceb734784192b162f565e0
   - enabled: 1
