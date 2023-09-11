@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Web;
+using Newtonsoft.Json.Linq;
+using static System.Net.WebRequestMethods;
+using UnityEditor.Experimental.GraphView;
 
 public class AuthenticationManager
 {
@@ -35,6 +38,38 @@ public class AuthenticationManager
         refreshToken;
     public static int GetAccessExpiration() =>
         (tokenTime + expiresIn - DateTime.Now.Second);
+
+    public static async Task<string> GetAccessTokenAsync(string pilot)
+    {
+        //Env.Load(".env");
+
+        string domain = ".varcities.eu";
+        string hostIdmUrl = "https://idm." + pilot.Replace("_", "-") + domain;
+
+        string configKey = pilot.ToUpper().Replace("-", "__") + "_QUANTUMLEAP_OAUTH2";
+        //string configValue = Env.GetString(configKey);
+        string configValue = RequestTest.Instance.envVariables[configKey];
+
+        RestClient client = new RestClient(hostIdmUrl);
+        RestRequest request = new RestRequest("/oauth2/token", Method.POST);
+
+        request.AddHeader("Accept", "application/json");
+        request.AddHeader("Authorization", "Basic " + configValue);
+        request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
+        request.AddParameter("grant_type", "client_credentials");
+
+        Debug.Log(hostIdmUrl.ToString());
+
+        IRestResponse response = await client.ExecuteAsync(request);
+        Debug.Log(response.Content);
+        JObject data = JObject.Parse(response.Content);
+        string token = data["access_token"].ToString();
+
+        Debug.Log("=======================================");
+        Debug.Log(token);
+
+        return token;
+    }
 
     public static async void RequestAccessToken(Action onSuccess, Action<string> onFailure)
     {
@@ -136,7 +171,8 @@ public class AuthenticationManager
         * URL='https://'"${HOST}"':'"${QUANTMLEAP_PROXY_HTTPS_PORT}"'/v2/entities/'"${SENSOR}"'/attrs/'"${ATTRIBUTE}"'?lastN=100' //selected one
         ****************************************************************************************************************************************/
 
-        string url = "https://varcities.tuc.gr:" + quantmleap_proxy_https_port + "/v2/entities";
+        string url = "https://varcities-api.leuven.varcities.eu/v2/entities/urn:ngsi-ld:Device:GARMON067/attrs/windGust?lastN=1";
+        //string url = "https://varcities.tuc.gr:" + quantmleap_proxy_https_port + "/v2/entities";
         var client = new RestClient(url);
         client.Timeout = -1;
         client.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
@@ -224,6 +260,48 @@ public class AuthenticationManager
             ResponseFailContent response_content = JsonUtility.FromJson<ResponseFailContent>(response.Content);
             Debug.Log(response.Content);
         }
+    }
+
+    public static async void GetData(string token, string pilot)
+    {
+        /****************************************************************************************************************************************
+        * URL = 'https://'"${HOST}"':'"${QUANTMLEAP_PROXY_HTTPS_PORT}"'/v2/entities' # get all sensors
+        * URL='https://'"${HOST}"':'"${QUANTMLEAP_PROXY_HTTPS_PORT}"'/v2/entities/'"${SENSOR}"'?lastN=100' # all the attribues of SENSOR
+        * URL='https://'"${HOST}"':'"${QUANTMLEAP_PROXY_HTTPS_PORT}"'/v2/entities/'"${SENSOR}"'/attrs/'"${ATTRIBUTE}"'?lastN=100' //selected one
+        ****************************************************************************************************************************************/
+
+        string url = "https://varcities-api."+ pilot.Replace("_", "-")+".varcities.eu/v2/entities";
+        var client = new RestClient(url);
+        client.Timeout = -1;
+        client.RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+
+        var request = new RestRequest(Method.GET);
+        request.AddHeader("Fiware-Service", "openiot");
+        request.AddHeader("X-Auth-Token", token);
+        request.AddHeader("Fiware-ServicePath", "/");
+
+        IRestResponse response = await Task.Run(() =>
+        {
+            return client.ExecuteAsync(request);
+        });
+
+        Debug.Log(response.Content);
+        /*
+        if (response.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            EntityAttributes response_content = JsonUtility.FromJson<EntityAttributes>(response.Content);
+            Debug.Log(response_content.entityType);
+            foreach (Attribute attr in response_content.attributes)
+            {
+                Debug.Log(attr.attrName + " : " + attr.values[0]);
+            }
+        }
+        else
+        {
+            Debug.Log(response.StatusCode);
+            ResponseFailContent response_content = JsonUtility.FromJson<ResponseFailContent>(response.Content);
+            Debug.Log(response.Content);
+        }*/
     }
 
     public static class JsonHelper
